@@ -1,0 +1,22 @@
+html,body {
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    background-image: url(img/page-bg.jpg);
+    background-position: center;
+    background-size: cover;
+}
+
+#game {
+    background-color: white;
+    /* border: 1px solid black; */
+    flex-grow: 0;
+}

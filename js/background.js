@@ -1,10 +1,44 @@
-// referenceValue: number between 0 and 1
-// maxNumber: number that will be returned on referenceValue = 1
-// ej:
-// f(0, 5) = 0
-// f(1, 5) = 5
+/**
+ * This function can be used to get values from X to Y, at an increasing (non-linear) pace.
+ *
+ * ej:
+ *
+ * f(0, 5) = 0
+ *
+ * f(0.2, 5) = 0.74...
+ *
+ * f(0.4, 5) = 1.59...
+ *
+ * f(0.6, 5) = 2.57...
+ *
+ * f(1, 5) = 5
+ *
+ * @param {Number} referenceValue number between 0 and 1
+ * @param {Number} maxNumber number that will be returned on referenceValue = 1
+ * @returns {Number}
+ */
 function exponentialIncreaseFunc(referenceValue, maxNumber) {
   return maxNumber * (Math.pow(2, referenceValue) - 1);
+}
+
+/**
+ * Same as exponentialIncreaseFunc, but the first values scale more slowly
+ * and the latter ones faster. It's possible to control that difference
+ * with the third argument
+ *
+ * @param {Number} referenceValue number between 0 and 1
+ * @param {Number} maxNumber number that will be returned on referenceValue = 1
+ * @param {Number} smoothness smoothen the early values
+ * @returns {Number}
+ */
+function exponentialIncreaseSmootherFunc(
+  referenceValue,
+  maxNumber,
+  smoothness
+) {
+  const smoothRefValue =
+    referenceValue * referenceValue * (3 - 2 * referenceValue);
+  return maxNumber * (1 - Math.pow(1 - smoothRefValue, smoothness));
 }
 
 // Background MUST be 400x400
@@ -32,12 +66,17 @@ class Background {
 
     this.image.onload = () => (this.ready = true);
     this.image.src = imgSource;
+
+    this.afterSpeedChangeCallback = null;
   }
 
-  changeSpeedY(newSpeed, pace) {
+  changeSpeedY(newSpeed, pace, afterSpeedChangeCallback) {
     this.speedIncreaseStepPace = pace;
     this.targetSpeedY = [this.speedY, newSpeed];
     this.speedIncreaseStep = 0;
+    this.afterSpeedChangeCallback = afterSpeedChangeCallback
+      ? afterSpeedChangeCallback
+      : null;
   }
 
   draw() {
@@ -70,19 +109,31 @@ class Background {
         // increase speed
         this.speedY =
           this.targetSpeedY[0] +
-          exponentialIncreaseFunc(this.speedIncreaseStep, difSpeedInitialFinal);
+          exponentialIncreaseSmootherFunc(
+            this.speedIncreaseStep,
+            difSpeedInitialFinal,
+            1.5
+          );
       }
       if (this.targetSpeedY[1] < this.speedY) {
         // decrease speed
         this.speedY =
-          this.targetSpeedY[1] -
-          exponentialIncreaseFunc(this.speedIncreaseStep, difSpeedInitialFinal);
+          this.targetSpeedY[0] -
+          exponentialIncreaseSmootherFunc(
+            this.speedIncreaseStep,
+            difSpeedInitialFinal,
+            1.5
+          );
       }
 
       // Reset target speed
       if (this.speedIncreaseStep === 1) {
         this.targetSpeedY = [this.targetSpeedY[1], this.targetSpeedY[1]];
         this.speedIncreaseStepPace = 0.0025;
+        if (this.afterSpeedChangeCallback) {
+          this.afterSpeedChangeCallback();
+          this.afterSpeedChangeCallback = null;
+        }
       }
     }
   }

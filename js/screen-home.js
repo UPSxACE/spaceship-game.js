@@ -10,10 +10,11 @@ class ScreenHome {
       pressStartOpacity: 0,
       pressStartBlinkingState: 1, // 1 or 2
     };
+    this.nextScreen = null;
   }
 
   #drawTitle() {
-    if (this.state === "DONELOADING") {
+    if (this.state === "DONE_LOADING") {
       let opacity =
         this.animations.titleOpacity >= 1
           ? 1
@@ -33,10 +34,31 @@ class ScreenHome {
       this.game.context.fillText(text, x, y, 360);
       this.game.context.closePath();
     }
+
+    if (this.state === "LEAVING") {
+      let opacity =
+        this.animations.titleOpacity <= 0
+          ? 0
+          : this.animations.titleOpacity - 0.01;
+      this.animations.titleOpacity = opacity;
+
+      this.game.context.beginPath();
+      this.game.context.font = "20px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = "Spaceship Game";
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
+    }
   }
 
   #drawPressStart() {
-    if (this.state === "DONELOADING") {
+    if (this.state === "DONE_LOADING") {
       let opacity = this.animations.pressStartOpacity;
 
       if (this.animations.pressStartBlinkingState === 1) {
@@ -67,6 +89,27 @@ class ScreenHome {
       this.game.context.fillText(text, x, y, 360);
       this.game.context.closePath();
     }
+
+    if (this.state === "LEAVING") {
+      let opacity = this.animations.pressStartOpacity <= 0
+        ? 0
+        : (this.animations.pressStartOpacity - 0.01);
+
+      this.animations.pressStartOpacity = opacity;
+
+      this.game.context.beginPath();
+      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = "Press Start";
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 + 20 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
+    }
   }
 
   #clear() {
@@ -80,21 +123,30 @@ class ScreenHome {
       this.#drawTitle();
       this.#drawPressStart();
     }
+    if (this.state === "LEAVING") {
+      if (
+        this.animations.titleOpacity === 0 &&
+        this.animations.pressStartOpacity === 0
+      ) {
+        this.#changeScreen();
+      }
+    }
   }
 
   load() {
     this.game.spaceship.resetPosition();
     // Give some time for the page to load before starting to load the game
     // Gradually increase background speed
+    this.game.background.changeSpeedY(1, 0.005);
     setTimeout(() => {
       this.game.background.changeSpeedY(2, 0.005);
-    }, 500);
+    }, 1000);
     setTimeout(() => {
       this.game.background.changeSpeedY(3, 0.005);
-    }, 1500);
+    }, 2000);
     setTimeout(() => {
       this.game.background.changeSpeedY(7, 0.0025);
-    }, 3000);
+    }, 3500);
     // Spawn spaceship
     setTimeout(() => {
       const gameTitleX = this.game.width / 2 - 48 / 2;
@@ -108,23 +160,36 @@ class ScreenHome {
           this.game.background.speedY * 0.1,
           0.2
         );
-        if(this.game.background === 7){
-          clearInterval(speedInterval)
+        if (this.game.background.speedY === 7) {
+          clearInterval(speedInterval);
         }
       }, 1000 / 144);
-    }, 4000);
-    // Set state to DONELOADING (title and press start button appears)
+    }, 4500);
+    // Set state to DONE_LOADING (title and press start button appears)
     setTimeout(() => {
-      this.state = "DONELOADING";
-    }, 7500);
-    
+      this.state = "DONE_LOADING";
+
+      const changeScreenEvent = (event) => {
+        event.preventDefault();
+        if (event.key === "Enter") {
+          this.state = "LEAVING";
+          this.nextScreen = new ScreenGame(this.game);
+          window.removeEventListener("keydown", changeScreenEvent);
+        }
+      };
+
+      window.addEventListener("keydown", changeScreenEvent);
+    }, 8000);
+
     this.interval = setInterval(() => {
       this.#clear();
       this.#update();
     }, 1000 / 144); // 144 frames per second
   }
 
-  changeScreen() {
-    
+  #changeScreen() {
+    clearInterval(this.interval);
+    this.interval = null;
+    this.nextScreen.load();
   }
 }

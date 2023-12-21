@@ -8,7 +8,7 @@ class ScreenHome {
     this.animations = {
       titleOpacity: 0,
       pressStartOpacity: 0,
-      pressStartBlinkingState: 1, // 1 or 2
+      pressStartBlinkingState: 1, // 1, 2 or 3
     };
     this.nextScreen = null;
   }
@@ -140,13 +140,13 @@ class ScreenHome {
     this.game.background.changeSpeedY(1, 0.005);
     setTimeout(() => {
       this.game.background.changeSpeedY(2, 0.005);
-    }, 1000);
-    setTimeout(() => {
-      this.game.background.changeSpeedY(3, 0.005);
     }, 2000);
     setTimeout(() => {
+      this.game.background.changeSpeedY(3, 0.005);
+    }, 3000);
+    setTimeout(() => {
       this.game.background.changeSpeedY(7, 0.0025);
-    }, 3500);
+    }, 4500);
     // Spawn spaceship
     setTimeout(() => {
       const gameTitleX = this.game.width / 2 - 48 / 2;
@@ -164,7 +164,7 @@ class ScreenHome {
           clearInterval(speedInterval);
         }
       }, 1000 / 144);
-    }, 4500);
+    }, 5500);
     // Set state to DONE_LOADING (title and press start button appears)
     setTimeout(() => {
       this.state = "DONE_LOADING";
@@ -179,7 +179,7 @@ class ScreenHome {
       };
 
       window.addEventListener("keydown", changeScreenEvent);
-    }, 8000);
+    }, 9000);
 
     this.interval = setInterval(() => {
       this.#clear();

@@ -77,7 +77,7 @@ class Spaceship {
     let onArrival = () => {};
 
     if (this.autopilot?.config?.onArrival) {
-      onArrival = this.autopilot.config.onArrival();
+      onArrival = this.autopilot.config.onArrival;
     }
 
     this.autopilot = {

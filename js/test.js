@@ -193,6 +193,20 @@ class Spaceship {
   ];
   engineSprite = loadSprite("img/engine.png");
   spaceshipSprite = loadSprite("img/ship.png");
+  colliders = [
+    {
+      x: 19,
+      y: 9,
+      w: 10,
+      h: 30,
+    },
+    {
+      x: 8,
+      y: 29,
+      w: 32,
+      h: 10,
+    },
+  ];
 
   /**
    * @param {Game} game
@@ -345,11 +359,17 @@ class Spaceship {
     this.game.context.drawImage(firesprite, this.x, this.y + 3, 48, 48);
     this.game.context.drawImage(this.engineSprite, this.x, this.y + 3, 48, 48);
     this.game.context.drawImage(this.spaceshipSprite, this.x, this.y, 48, 48);
-    this.game.context.beginPath();
-    this.game.context.strokeStyle = "red";
-    this.game.context.lineWidth = 2;
-    this.game.context.strokeRect(this.x, this.y, 48, 48);
-    this.game.context.closePath();
+
+    this.colliders.forEach((collider) => {
+      const x = this.x + collider.x;
+      const y = this.y + collider.y;
+
+      this.game.context.beginPath();
+      this.game.context.strokeStyle = "red";
+      this.game.context.lineWidth = 2;
+      this.game.context.strokeRect(x, y, collider.w, collider.h);
+      this.game.context.closePath();
+    });
 
     this.currentFrame = ((this.currentFrame + this.speedY * 5) % 250) + 1;
   }
@@ -456,10 +476,12 @@ class Obstacle {
   }
 
   checkCollision(x, y, width, height) {
-    const xStartCollapse = x < this.x + 48;
-    const xEndCollapse = x + width > this.x;
-    const yStartCollapse = y < this.y + 48;
-    const yEndCollapse = y + height > this.y;
+    const xStartCollapse =
+      x < this.x + this.collision.x + 48 + this.collision.w;
+    const xEndCollapse = x + width > this.x + this.collision.x;
+    const yStartCollapse =
+      y < this.y + this.collision.y + 48 + this.collision.h;
+    const yEndCollapse = y + height > this.y + this.collision.y;
 
     return xStartCollapse && xEndCollapse && yStartCollapse && yEndCollapse;
   }
@@ -481,15 +503,19 @@ class Screen {
       48,
       48
     );
+
+    let collided = false;
+
+    this.game.spaceship.colliders.forEach((collider) => {
+      const x = this.game.spaceship.x + collider.x;
+      const y = this.game.spaceship.y + collider.y;
+      if (obstacle.checkCollision(x, y, collider.w, collider.h)) {
+        collided = true;
+      }
+    });
+
     this.game.context.beginPath();
-    this.game.context.strokeStyle = obstacle.checkCollision(
-      this.game.spaceship.x,
-      this.game.spaceship.y,
-      48,
-      48
-    )
-      ? "red"
-      : "green";
+    this.game.context.strokeStyle = collided ? "red" : "green";
     this.game.context.lineWidth = 2;
     this.game.context.strokeRect(
       obstacle.x + obstacle.collision.x,

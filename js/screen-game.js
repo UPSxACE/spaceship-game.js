@@ -118,17 +118,26 @@ class ScreenGame {
       48,
       48
     );
+
+    let collided = false;
+
+    this.game.spaceship.colliders.forEach((collider) => {
+      const x = this.game.spaceship.x + collider.x;
+      const y = this.game.spaceship.y + collider.y;
+      if (obstacle.checkCollision(x, y, collider.w, collider.h)) {
+        collided = true;
+      }
+    });
+
     this.game.context.beginPath();
-    this.game.context.strokeStyle = obstacle.checkCollision(
-      this.game.spaceship.x,
-      this.game.spaceship.y,
-      48,
-      48
-    )
-      ? "red"
-      : "green";
+    this.game.context.strokeStyle = collided ? "red" : "green";
     this.game.context.lineWidth = 2;
-    this.game.context.strokeRect(obstacle.x, obstacle.y, 48, 48);
+    this.game.context.strokeRect(
+      obstacle.x + obstacle.collider.x,
+      obstacle.y + obstacle.collider.y,
+      48 + obstacle.collider.w,
+      48 + obstacle.collider.h
+    );
     this.game.context.closePath();
   }
 

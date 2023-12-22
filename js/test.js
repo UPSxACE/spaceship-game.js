@@ -541,11 +541,16 @@ class Screen {
   load() {
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
+        const spriteIndex =  i * 4 + j
+
+        const spritesSelection = [4, 5, 7, 8, 10, 11, 14];
+        if (!spritesSelection.includes(spriteIndex)) continue;
+
         const obstacle = new Obstacle(
           this.game.width,
           this.game.height,
           this.level,
-          i * 4 + j
+          spriteIndex
         );
 
         obstacle.x = j * 48 + 60 * j;

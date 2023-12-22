@@ -180,6 +180,11 @@ class Spaceship {
     this.game.context.drawImage(firesprite, this.x, this.y + 3, 48, 48);
     this.game.context.drawImage(this.engineSprite, this.x, this.y + 3, 48, 48);
     this.game.context.drawImage(this.spaceshipSprite, this.x, this.y, 48, 48);
+    this.game.context.beginPath();
+    this.game.context.strokeStyle = "red";
+    this.game.context.lineWidth = 2;
+    this.game.context.strokeRect(this.x, this.y, 48, 48);
+    this.game.context.closePath();
 
     this.currentFrame = ((this.currentFrame + this.speedY * 5) % 250) + 1;
   }

@@ -78,4 +78,13 @@ class Obstacle {
     this.x += this.speedX;
     this.y += this.speedY;
   }
+
+  checkCollision(x, y, width, height) {
+    const xStartCollapse = x < this.x + 48;
+    const xEndCollapse = x + width > this.x;
+    const yStartCollapse = y < this.y + 48;
+    const yEndCollapse = y + height > this.y;
+
+    return xStartCollapse && xEndCollapse && yStartCollapse && yEndCollapse;
+  }
 }

@@ -81,16 +81,16 @@ class Background {
 
   draw() {
     if (this.ready) {
-      this.context.drawImage(this.image, this.x, this.y - this.height + 2);
-      this.context.drawImage(this.image, this.x, this.y);
-      this.context.drawImage(this.image, this.x, this.y + this.height - 2);
-
       if (this.y < this.height) {
         this.y += this.speedY;
       }
       if (this.y >= this.height) {
         this.y = (this.y % this.height) + this.speedY;
       }
+
+      this.context.drawImage(this.image, this.x, this.y - this.height + 2);
+      this.context.drawImage(this.image, this.x, this.y);
+      this.context.drawImage(this.image, this.x, this.y + this.height - 2);
 
       // Set new speed step
       if (this.speedIncreaseStep + this.speedIncreaseStepPace > 1) {

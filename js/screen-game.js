@@ -118,6 +118,18 @@ class ScreenGame {
       48,
       48
     );
+    this.game.context.beginPath();
+    this.game.context.strokeStyle = obstacle.checkCollision(
+      this.game.spaceship.x,
+      this.game.spaceship.y,
+      48,
+      48
+    )
+      ? "red"
+      : "green";
+    this.game.context.lineWidth = 2;
+    this.game.context.strokeRect(obstacle.x, obstacle.y, 48, 48);
+    this.game.context.closePath();
   }
 
   #clear() {

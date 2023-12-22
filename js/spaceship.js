@@ -9,8 +9,6 @@ window.addEventListener("keydown", (event) => {
   keys[event.key] = true;
 });
 
-
-
 class Spaceship {
   fireOffSprites = [
     loadSprite("img/fire1/tile000.png"),
@@ -69,10 +67,46 @@ class Spaceship {
     };
   }
 
-  #moveLeft = () => (this.x -= this.speedX);
-  #moveUp = () => (this.y -= this.speedY);
-  #moveRight = () => (this.x += this.speedX);
-  #moveDown = () => (this.y += this.speedY);
+  #moveLeft = () => {
+    const destination = this.x - this.speedX;
+    if (!this.controllable) return (this.x = destination);
+    if (destination + this.colliders[1].x < 0) {
+      return (this.x = -this.colliders[1].x);
+    }
+    return (this.x = destination);
+  };
+  #moveUp = () => {
+    const destination = this.y - this.speedY;
+    if (!this.controllable) return (this.y = destination);
+    if (destination + this.colliders[0].y < 0) {
+      return (this.y = -this.colliders[0].y);
+    }
+    return (this.y = destination);
+  };
+  #moveRight = () => {
+    const destination = this.x + this.speedX;
+    if (!this.controllable) return (this.x = destination);
+    if (
+      destination + this.colliders[1].x >
+      this.game.width - this.colliders[1].w
+    ) {
+      return (this.x =
+        this.game.width - this.colliders[1].w - this.colliders[1].x);
+    }
+    return (this.x = destination);
+  };
+  #moveDown = () => {
+    const destination = this.y + this.speedY;
+    if (!this.controllable) return (this.y = destination);
+    if (
+      destination + this.colliders[0].y >
+      this.game.height - this.colliders[0].h
+    ) {
+      return (this.y =
+        this.game.height - this.colliders[0].h - this.colliders[0].y);
+    }
+    return (this.y = destination);
+  };
 
   resetPosition() {
     this.x = game.canva.width / 2 - 24;

@@ -112,7 +112,7 @@ class Background {
           exponentialIncreaseSmootherFunc(
             this.speedIncreaseStep,
             difSpeedInitialFinal,
-            1.5
+            1.25
           );
       }
       if (this.targetSpeedY[1] < this.speedY) {
@@ -122,7 +122,7 @@ class Background {
           exponentialIncreaseSmootherFunc(
             this.speedIncreaseStep,
             difSpeedInitialFinal,
-            1.5
+            1.25
           );
       }
 

@@ -1,3 +1,9 @@
+const loadSprite = (url) => {
+  const img = new Image(48, 48);
+  img.src = url;
+  return img;
+};
+
 class Game {
   /**
    * @param {HTMLCanvasElement} canvaNode
@@ -19,6 +25,6 @@ class Game {
   }
 
   init() {
-    this.currentScreen.load()
+    this.currentScreen.load();
   }
 }

@@ -9,11 +9,7 @@ window.addEventListener("keydown", (event) => {
   keys[event.key] = true;
 });
 
-const loadSprite = (url) => {
-  const img = new Image(48, 48);
-  img.src = url;
-  return img;
-};
+
 
 class Spaceship {
   fireOffSprites = [
@@ -46,6 +42,7 @@ class Spaceship {
     this.y = game.canva.height;
     this.engineOn = false;
     this.keepEngineOn = false;
+    this.keepEngineOnBoost = false;
     this.keepEngineOff = false;
     this.autopilot = {
       on: false,
@@ -171,7 +168,7 @@ class Spaceship {
     if (this.engineOn) {
       // firesprite = this.fireOnSprites[currentFrame % this.fireOnSprites.length];
       firesprite = this.fireOnSprites[Math.min(currentFrame, 5)];
-      if (this.game.background.speedY > 2.5) {
+      if (this.game.background.speedY > 2.5 || this.keepEngineOnBoost) {
         firesprite = this.fireOnSprites[5];
       }
     }

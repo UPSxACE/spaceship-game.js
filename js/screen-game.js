@@ -14,6 +14,17 @@ class ScreenGame {
     this.waitLevelText = 0;
     this.score = 0;
     this.timePoints = 0;
+    /**
+     * @type {Obstacle[]}
+     */
+    this.obstacles = [];
+  }
+
+  // The maximum is exclusive and the minimum is inclusive
+  #getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
   }
 
   #drawLevelText() {
@@ -96,6 +107,19 @@ class ScreenGame {
     this.game.context.closePath();
   }
 
+  /**
+   * @param {Obstacle} obstacle
+   */
+  #drawObstacle(obstacle) {
+    this.game.context.drawImage(
+      obstacle.sprite,
+      obstacle.x,
+      obstacle.y,
+      48,
+      48
+    );
+  }
+
   #clear() {
     this.game.context.clearRect(0, 0, this.game.width, this.game.height);
   }
@@ -109,15 +133,44 @@ class ScreenGame {
           ? this.waitLevelText--
           : (this.animations.levelTextBlinkingState = 3);
       }
+
       this.#drawLevelText();
+
       if (
         this.animations.levelTextBlinkingState === 3 &&
         this.animations.levelTextOpacity === 0
       ) {
+        this.waitLevelText = 2 * 144;
         this.state = "PLAYING";
         this.animations.levelTextBlinkingState = 1;
       }
     }
+
+    if (
+      this.state === "PLAYING" &&
+      this.nextLevelTimer === 0 &&
+      this.obstacles.length === 0
+    ) {
+      if (this.level === 9) {
+        this.game.spaceship.keepEngineOn = true;
+      }
+      if (this.level === 14) {
+        this.game.spaceship.keepEngineOnBoost = true;
+      }
+      this.level++;
+      this.state = "NEW_LEVEL";
+      if (this.level % 5 === 0)
+        this.game.background.changeSpeedY(
+          0.2 + this.level * 0.1,
+          1 / (1.5 * 144)
+        );
+      this.nextLevelTimer = Math.floor((3.75 + this.level * 1.25) * 144);
+    }
+
+    if (this.state === "PLAYING" && this.nextLevelTimer > 0) {
+      this.nextLevelTimer--;
+    }
+
     if (this.state === "PLAYING") {
       this.timePoints++;
       if (this.timePoints > 144 * 10) {
@@ -125,30 +178,66 @@ class ScreenGame {
         this.score += this.level;
       }
     }
+
     if (this.state === "NEW_LEVEL" || this.state === "PLAYING") {
       this.#drawScore();
+    }
+
+    if (
+      (this.state === "PLAYING" && this.nextLevelTimer % 288 === 1) ||
+      (this.state === "PLAYING" && this.obstacles.length === 0)
+    ) {
+      let rng =
+        this.#getRandomInt(this.level * 10, (this.level * 0.01 + 1) * 10) / 10;
+      for (rng; rng > 0; rng--) {
+        const obstacle = new Obstacle(
+          this.game.width,
+          this.game.height,
+          this.level
+        );
+        this.obstacles.push(obstacle);
+      }
+    }
+
+    if (this.state === "PLAYING") {
+      this.obstacles = this.obstacles.filter((obstacle) => {
+        obstacle.move();
+
+        const inScreen = obstacle.checkInScreen();
+
+        if (inScreen) {
+          this.#drawObstacle(obstacle);
+          return true;
+        }
+
+        this.score++;
+        return false;
+      });
     }
   }
 
   load() {
     this.game.spaceship.keepEngineOn = false;
+    this.game.spaceship.keepEngineOnBoost = false;
     this.game.spaceship.keepEngineOff = false;
     this.game.spaceship.speedX = 1;
     this.game.spaceship.speedY = 1;
 
     const x = this.game.width / 2 - 24;
     const y = this.game.height - 60;
-    this.game.background.changeSpeedY(0.85, 0.002);
+    this.game.background.changeSpeedY(0.2, 0.002);
     this.game.spaceship.goTo(x, y, {
       onArrival: () => {
+        this.obstacles = [];
         this.game.spaceship.controllable = true;
         this.level = 1;
         this.score = 0;
         this.timePoints = 0;
         this.waitLevelText = 2 * 144; // This gives 2 seconds for the user to look at the new Level text
+        this.nextLevelTimer = 5 * 144; // First level takes 5 seconds
         this.state = "NEW_LEVEL";
       },
-      speed: [1, 1],
+      speed: [0.8, 0.8],
     });
 
     this.interval = setInterval(() => {

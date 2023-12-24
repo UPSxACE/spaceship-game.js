@@ -26,6 +26,16 @@ class Spaceship {
   ];
   engineSprite = loadSprite("img/engine.png");
   spaceshipSprite = loadSprite("img/ship.png");
+  explosionSprites = [
+    loadSprite("img/explosion/tile000.png"),
+    loadSprite("img/explosion/tile001.png"),
+    loadSprite("img/explosion/tile002.png"),
+    loadSprite("img/explosion/tile003.png"),
+    loadSprite("img/explosion/tile004.png"),
+    loadSprite("img/explosion/tile005.png"),
+    loadSprite("img/explosion/tile006.png"),
+    loadSprite("img/explosion/tile007.png"),
+  ];
   colliders = [
     {
       x: 19,
@@ -65,6 +75,8 @@ class Spaceship {
         onArrival: null,
       },
     };
+    this.crashed = false;
+    this.crashedFrame = 0;
   }
 
   #moveLeft = () => {
@@ -177,6 +189,7 @@ class Spaceship {
   draw() {
     let movedUp = false;
 
+    if (this.crashed) this.controllable = false;
     if (this.controllable) {
       if (keys["ArrowLeft"]) this.#moveLeft();
       if (keys["ArrowUp"]) {
@@ -225,9 +238,17 @@ class Spaceship {
         this.fireOffSprites[currentFrame % this.fireOffSprites.length];
     }
 
-    this.game.context.drawImage(firesprite, this.x, this.y + 3, 48, 48);
-    this.game.context.drawImage(this.engineSprite, this.x, this.y + 3, 48, 48);
-    this.game.context.drawImage(this.spaceshipSprite, this.x, this.y, 48, 48);
+    if (this.crashedFrame < 81) {
+      this.game.context.drawImage(firesprite, this.x, this.y + 3, 48, 48);
+      this.game.context.drawImage(
+        this.engineSprite,
+        this.x,
+        this.y + 3,
+        48,
+        48
+      );
+      this.game.context.drawImage(this.spaceshipSprite, this.x, this.y, 48, 48);
+    }
 
     this.colliders.forEach((collider) => {
       const x = this.x + collider.x;
@@ -241,5 +262,21 @@ class Spaceship {
     });
 
     this.currentFrame = ((this.currentFrame + this.speedY * 5) % 250) + 1;
+
+    if (this.crashed) this.#drawExplosion();
+  }
+
+  #drawExplosion() {
+    if (this.crashedFrame < 216) {
+      this.crashedFrame++;
+      const frame = Math.ceil(this.crashedFrame / 27 - 1);
+      this.game.context.drawImage(
+        this.explosionSprites[frame],
+        this.x,
+        this.y,
+        48,
+        48
+      );
+    }
   }
 }

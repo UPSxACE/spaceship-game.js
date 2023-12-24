@@ -92,6 +92,13 @@ class ScreenGame {
       }
     }
 
+    if (this.state === "GAME_OVER") {
+      opacity = this.animations.scoreOpacity - 0.015;
+      if (opacity <= 0) {
+        opacity = 0;
+      }
+    }
+
     this.animations.scoreOpacity = opacity;
     this.game.context.beginPath();
     this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
@@ -126,6 +133,8 @@ class ScreenGame {
       const y = this.game.spaceship.y + collider.y;
       if (obstacle.checkCollision(x, y, collider.w, collider.h)) {
         collided = true;
+        this.game.spaceship.crashed = true;
+        this.state = "GAME_OVER";
       }
     });
 
@@ -141,6 +150,10 @@ class ScreenGame {
     this.game.context.closePath();
   }
 
+  #drawGameOver() {
+    console.log("game over");
+  }
+
   #clear() {
     this.game.context.clearRect(0, 0, this.game.width, this.game.height);
   }
@@ -148,6 +161,12 @@ class ScreenGame {
   #update() {
     this.game.background.draw();
     this.game.spaceship.draw();
+    if (
+      this.game.spaceship.crashed &&
+      this.game.spaceship.crashedFrame >= 216
+    ) {
+      this.#drawGameOver();
+    }
     if (this.state === "NEW_LEVEL") {
       if (this.animations.levelTextBlinkingState === 2) {
         this.waitLevelText >= 0
@@ -200,7 +219,11 @@ class ScreenGame {
       }
     }
 
-    if (this.state === "NEW_LEVEL" || this.state === "PLAYING") {
+    if (
+      this.state === "NEW_LEVEL" ||
+      this.state === "PLAYING" ||
+      this.state === "GAME_OVER"
+    ) {
       this.#drawScore();
     }
 
@@ -220,7 +243,7 @@ class ScreenGame {
       }
     }
 
-    if (this.state === "PLAYING") {
+    if (this.state === "PLAYING" || this.state === "GAME_OVER") {
       this.obstacles = this.obstacles.filter((obstacle) => {
         obstacle.move();
 
@@ -231,7 +254,7 @@ class ScreenGame {
           return true;
         }
 
-        this.score++;
+        if (this.state === "PLAYING") this.score++;
         return false;
       });
     }

@@ -34,9 +34,9 @@ Screen are 400x600 (2:3)
 - [X] Make background move down in loop
 
 # 4. Possible future features
-- Engine animation on moving up
-- Collision animation
-- Ramping difficulty
+- [X] Engine animation on moving up
+- [X] Collision animation
+- [X] Ramping difficulty
 - Shooting asteroids on clicking/holding spacebar (2 per second)
 - Limited ammo or reload
 - Asteroid destruction effect

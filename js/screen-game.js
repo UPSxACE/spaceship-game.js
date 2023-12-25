@@ -10,6 +10,7 @@ class ScreenGame {
       levelTextOpacity: 0,
       levelTextBlinkingState: 1, // 0, 1, 2 or 3
       scoreOpacity: 0,
+      gameOverTextOpacity: 0,
     };
     this.waitLevelText = 0;
     this.score = 0;
@@ -151,7 +152,58 @@ class ScreenGame {
   }
 
   #drawGameOver() {
-    console.log("game over");
+    let opacity =
+        this.animations.gameOverTextOpacity >= 1
+          ? 1
+          : this.animations.gameOverTextOpacity + 0.003;
+      this.animations.gameOverTextOpacity = opacity;
+
+      this.game.context.beginPath();
+      this.game.context.font = "20px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = "Game Over";
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
+  }
+
+  #drawFinalScore(){
+    let opacity = this.animations.gameOverTextOpacity;
+
+    this.game.context.beginPath();
+      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = `Score: ${this.score}`;
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 + 20 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
+  }
+
+  #drawPressStart(){
+    let opacity = this.animations.gameOverTextOpacity;
+
+    this.game.context.beginPath();
+      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = `Press Start`;
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 + 20 + 20 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
   }
 
   #clear() {
@@ -166,6 +218,8 @@ class ScreenGame {
       this.game.spaceship.crashedFrame >= 216
     ) {
       this.#drawGameOver();
+      this.#drawFinalScore()
+      this.#drawPressStart()
     }
     if (this.state === "NEW_LEVEL") {
       if (this.animations.levelTextBlinkingState === 2) {

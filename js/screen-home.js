@@ -134,7 +134,7 @@ class ScreenHome {
   }
 
   load() {
-    this.game.spaceship.resetPosition();
+    this.game.spaceship.resetState();
     // Give some time for the page to load before starting to load the game
     // Gradually increase background speed
     this.game.background.changeSpeedY(1, 0.005);

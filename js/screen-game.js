@@ -132,10 +132,21 @@ class ScreenGame {
     this.game.spaceship.colliders.forEach((collider) => {
       const x = this.game.spaceship.x + collider.x;
       const y = this.game.spaceship.y + collider.y;
-      if (obstacle.checkCollision(x, y, collider.w, collider.h)) {
+      if (obstacle.checkCollision(x, y, collider.w, collider.h) && !this.game.spaceship.crashed) {
         collided = true;
         this.game.spaceship.crashed = true;
         this.state = "GAME_OVER";
+
+        const changeScreenEvent = (event) => {
+          event.preventDefault();
+          if (event.key === "Enter") {
+            this.state = "LEAVING";
+            this.nextScreen = new ScreenHome(this.game);
+            window.removeEventListener("keydown", changeScreenEvent);
+          }
+        };
+  
+        window.addEventListener("keydown", changeScreenEvent);
       }
     });
 
@@ -152,58 +163,68 @@ class ScreenGame {
   }
 
   #drawGameOver() {
-    let opacity =
+    let opacity;
+
+    if (this.state === "GAME_OVER") {
+      opacity =
         this.animations.gameOverTextOpacity >= 1
           ? 1
           : this.animations.gameOverTextOpacity + 0.003;
       this.animations.gameOverTextOpacity = opacity;
+    } else {
+      opacity =
+        this.animations.gameOverTextOpacity <= 0
+          ? 0
+          : this.animations.gameOverTextOpacity - 0.003;
+      this.animations.gameOverTextOpacity = opacity;
+    }
 
-      this.game.context.beginPath();
-      this.game.context.font = "20px 'Press Start 2P'"; // starts at 16 ends at 32
-      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+    this.game.context.beginPath();
+    this.game.context.font = "20px 'Press Start 2P'"; // starts at 16 ends at 32
+    this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
 
-      const text = "Game Over";
-      const measurement = this.game.context.measureText(text); // TextMetrics object
-      const tWidth = measurement.width;
+    const text = "Game Over";
+    const measurement = this.game.context.measureText(text); // TextMetrics object
+    const tWidth = measurement.width;
 
-      const x = this.game.width / 2 - tWidth / 2;
-      const y = this.game.height / 2 + 10 - 5;
-      this.game.context.fillText(text, x, y, 360);
-      this.game.context.closePath();
+    const x = this.game.width / 2 - tWidth / 2;
+    const y = this.game.height / 2 + 10 - 5;
+    this.game.context.fillText(text, x, y, 360);
+    this.game.context.closePath();
   }
 
-  #drawFinalScore(){
+  #drawFinalScore() {
     let opacity = this.animations.gameOverTextOpacity;
 
     this.game.context.beginPath();
-      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
-      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+    this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+    this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
 
-      const text = `Score: ${this.score}`;
-      const measurement = this.game.context.measureText(text); // TextMetrics object
-      const tWidth = measurement.width;
+    const text = `Score: ${this.score}`;
+    const measurement = this.game.context.measureText(text); // TextMetrics object
+    const tWidth = measurement.width;
 
-      const x = this.game.width / 2 - tWidth / 2;
-      const y = this.game.height / 2 + 10 + 20 - 5;
-      this.game.context.fillText(text, x, y, 360);
-      this.game.context.closePath();
+    const x = this.game.width / 2 - tWidth / 2;
+    const y = this.game.height / 2 + 10 + 20 - 5;
+    this.game.context.fillText(text, x, y, 360);
+    this.game.context.closePath();
   }
 
-  #drawPressStart(){
+  #drawPressStart() {
     let opacity = this.animations.gameOverTextOpacity;
 
     this.game.context.beginPath();
-      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
-      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+    this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+    this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
 
-      const text = `Press Start`;
-      const measurement = this.game.context.measureText(text); // TextMetrics object
-      const tWidth = measurement.width;
+    const text = `Press Start`;
+    const measurement = this.game.context.measureText(text); // TextMetrics object
+    const tWidth = measurement.width;
 
-      const x = this.game.width / 2 - tWidth / 2;
-      const y = this.game.height / 2 + 10 + 20 + 20 - 5;
-      this.game.context.fillText(text, x, y, 360);
-      this.game.context.closePath();
+    const x = this.game.width / 2 - tWidth / 2;
+    const y = this.game.height / 2 + 10 + 20 + 20 - 5;
+    this.game.context.fillText(text, x, y, 360);
+    this.game.context.closePath();
   }
 
   #clear() {
@@ -214,12 +235,12 @@ class ScreenGame {
     this.game.background.draw();
     this.game.spaceship.draw();
     if (
-      this.game.spaceship.crashed &&
-      this.game.spaceship.crashedFrame >= 216
+      (this.game.spaceship.crashed &&
+      this.game.spaceship.crashedFrame >= 216) || this.state === "LEAVING"
     ) {
       this.#drawGameOver();
-      this.#drawFinalScore()
-      this.#drawPressStart()
+      this.#drawFinalScore();
+      this.#drawPressStart();
     }
     if (this.state === "NEW_LEVEL") {
       if (this.animations.levelTextBlinkingState === 2) {
@@ -312,6 +333,15 @@ class ScreenGame {
         return false;
       });
     }
+
+
+    if (this.state === "LEAVING") {
+      if (
+        this.animations.gameOverTextOpacity === 0
+      ) {
+        this.#changeScreen();
+      }
+    }
   }
 
   load() {
@@ -342,5 +372,11 @@ class ScreenGame {
       this.#clear();
       this.#update();
     }, 1000 / 144); // 144 frames per second
+  }
+
+  #changeScreen() {
+    clearInterval(this.interval);
+    this.interval = null;
+    this.nextScreen.load();
   }
 }

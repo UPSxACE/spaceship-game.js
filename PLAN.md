@@ -26,12 +26,12 @@ Screen are 400x600 (2:3)
 - [X] Implement the draw/clear loop
 - [X] Create the logic to remove the title and the button on clicking the button, and moving the spaceship to the starting point
 - [X] Create the logic to move the spaceship
-- [ ] Make asteroids start appearing and moving
-- [ ] Implement collision
-- [ ] Add score count
-- [ ] Make game end on collision and show game over screen
-- [ ] Implement the "Back to Menu" button and logic
-- [ ] Make background move down in loop
+- [X] Make asteroids start appearing and moving
+- [X] Implement collision
+- [X] Add score count
+- [X] Make game end on collision and show game over screen
+- [X] Implement the "Back to Menu" button and logic
+- [X] Make background move down in loop
 
 # 4. Possible future features
 - Engine animation on moving up

@@ -125,6 +125,30 @@ class Spaceship {
     this.y = game.canva.height;
   }
 
+  resetState() {
+    this.currentFrame = 1;
+    this.controllable = false;
+    this.speedX = 1;
+    this.speedY = 1;
+    this.x = game.canva.width / 2 - 24;
+    this.y = game.canva.height;
+    this.engineOn = false;
+    this.keepEngineOn = false;
+    this.keepEngineOnBoost = false;
+    this.keepEngineOff = false;
+    this.autopilot = {
+      on: false,
+      targetX: null,
+      targetY: null,
+      config: {
+        restoreSpeed: null,
+        onArrival: null,
+      },
+    };
+    this.crashed = false;
+    this.crashedFrame = 0;
+  }
+
   #autopilotOff() {
     if (this.autopilot?.config?.restoreSpeed) {
       this.speedX = this.autopilot.config.restoreSpeed[0];

@@ -91,9 +91,10 @@ class ScreenHome {
     }
 
     if (this.state === "LEAVING") {
-      let opacity = this.animations.pressStartOpacity <= 0
-        ? 0
-        : (this.animations.pressStartOpacity - 0.01);
+      let opacity =
+        this.animations.pressStartOpacity <= 0
+          ? 0
+          : this.animations.pressStartOpacity - 0.01;
 
       this.animations.pressStartOpacity = opacity;
 
@@ -185,6 +186,42 @@ class ScreenHome {
       this.#clear();
       this.#update();
     }, 1000 / 144); // 144 frames per second
+  }
+
+  fastLoad() {
+    const onArrival = () => {
+      this.state = "DONE_LOADING";
+
+      const changeScreenEvent = (event) => {
+        event.preventDefault();
+        if (event.key === "Enter") {
+          this.state = "LEAVING";
+          this.nextScreen = new ScreenGame(this.game);
+          window.removeEventListener("keydown", changeScreenEvent);
+        }
+      };
+
+      window.addEventListener("keydown", changeScreenEvent);
+    }
+    
+    this.game.spaceship.resetState();
+
+    const gameTitleX = this.game.width / 2 - 48 / 2;
+    const gameTitleY = this.game.height / 2 + 10 - 5;
+    this.game.spaceship.keepEngineOn = true;
+
+    setTimeout(()=>{
+      this.game.spaceship.goTo(gameTitleX, gameTitleY - 48 - 28, {
+        speed: [1.5,1.5],
+        onArrival: onArrival
+      }); 
+    }, 1000)
+
+    this.interval = setInterval(() => {
+      this.#clear();
+      this.#update();
+    }, 1000 / 144); // 144 frames per second
+   
   }
 
   #changeScreen() {

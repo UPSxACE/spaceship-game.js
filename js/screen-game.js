@@ -377,6 +377,6 @@ class ScreenGame {
   #changeScreen() {
     clearInterval(this.interval);
     this.interval = null;
-    this.nextScreen.load();
+    this.nextScreen.fastLoad();
   }
 }

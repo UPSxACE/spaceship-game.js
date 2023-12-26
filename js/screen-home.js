@@ -11,6 +11,14 @@ class ScreenHome {
       pressStartBlinkingState: 1, // 1, 2 or 3
     };
     this.nextScreen = null;
+    this.highScore = null;
+  }
+
+  async loadHighscore() {
+    const hs = localStorage.getItem("high_score");
+    if (hs !== null) {
+      this.highScore = Number(hs);
+    }
   }
 
   #drawTitle() {
@@ -113,6 +121,48 @@ class ScreenHome {
     }
   }
 
+  #drawHighScore() {
+    if (this.highScore === null) return;
+
+    if (this.state === "DONE_LOADING") {
+      let opacity = this.animations.titleOpacity;
+
+      this.game.context.beginPath();
+      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = `Highest Score: ${this.highScore}`;
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 + 20 + 20 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
+    }
+
+    if (this.state === "LEAVING") {
+      let opacity =
+        this.animations.titleOpacity <= 0
+          ? 0
+          : this.animations.titleOpacity - 0.01;
+      this.animations.titleOpacity = opacity;
+
+      this.game.context.beginPath();
+      this.game.context.font = "12px 'Press Start 2P'"; // starts at 16 ends at 32
+      this.game.context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+      const text = `Highest Score: ${this.highScore}`;
+      const measurement = this.game.context.measureText(text); // TextMetrics object
+      const tWidth = measurement.width;
+
+      const x = this.game.width / 2 - tWidth / 2;
+      const y = this.game.height / 2 + 10 + 20 + 20 - 5;
+      this.game.context.fillText(text, x, y, 360);
+      this.game.context.closePath();
+    }
+  }
+
   #clear() {
     this.game.context.clearRect(0, 0, this.game.width, this.game.height);
   }
@@ -123,6 +173,7 @@ class ScreenHome {
     if (this.state !== null) {
       this.#drawTitle();
       this.#drawPressStart();
+      this.#drawHighScore();
     }
     if (this.state === "LEAVING") {
       if (
@@ -135,6 +186,7 @@ class ScreenHome {
   }
 
   load() {
+    this.loadHighscore();
     this.game.spaceship.resetState();
     // Give some time for the page to load before starting to load the game
     // Gradually increase background speed
@@ -189,6 +241,7 @@ class ScreenHome {
   }
 
   fastLoad() {
+    this.loadHighscore();
     const onArrival = () => {
       this.state = "DONE_LOADING";
 
@@ -202,26 +255,25 @@ class ScreenHome {
       };
 
       window.addEventListener("keydown", changeScreenEvent);
-    }
-    
+    };
+
     this.game.spaceship.resetState();
 
     const gameTitleX = this.game.width / 2 - 48 / 2;
     const gameTitleY = this.game.height / 2 + 10 - 5;
     this.game.spaceship.keepEngineOn = true;
 
-    setTimeout(()=>{
+    setTimeout(() => {
       this.game.spaceship.goTo(gameTitleX, gameTitleY - 48 - 28, {
-        speed: [1.5,1.5],
-        onArrival: onArrival
-      }); 
-    }, 1000)
+        speed: [1.5, 1.5],
+        onArrival: onArrival,
+      });
+    }, 1000);
 
     this.interval = setInterval(() => {
       this.#clear();
       this.#update();
     }, 1000 / 144); // 144 frames per second
-   
   }
 
   #changeScreen() {

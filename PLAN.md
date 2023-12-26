@@ -38,5 +38,5 @@ Screen are 400x600 (2:3)
 - [X] Collision animation
 - [X] Ramping difficulty
 - [X] Shooting asteroids on clicking spacebar (4 per second)
-- Asteroid destruction effect
+- [X] Save highest score and show it on start menu
 

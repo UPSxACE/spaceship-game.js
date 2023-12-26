@@ -148,6 +148,11 @@ class ScreenGame {
         this.game.spaceship.crashed = true;
         this.state = "GAME_OVER";
 
+        const currentHs = localStorage.getItem("high_score");
+        if (currentHs === null || Number(currentHs) < this.score) {
+          localStorage.setItem("high_score", String(this.score));
+        }
+
         const changeScreenEvent = (event) => {
           event.preventDefault();
           if (event.key === "Enter") {

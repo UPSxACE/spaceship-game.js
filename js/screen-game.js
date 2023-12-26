@@ -19,6 +19,12 @@ class ScreenGame {
      * @type {Obstacle[]}
      */
     this.obstacles = [];
+    /**
+     * @type {Bullet[]}
+     */
+    this.bullets = [];
+    this.shootEvent = null;
+    this.bulletReloadTime = 0;
   }
 
   // The maximum is exclusive and the minimum is inclusive
@@ -132,7 +138,12 @@ class ScreenGame {
     this.game.spaceship.colliders.forEach((collider) => {
       const x = this.game.spaceship.x + collider.x;
       const y = this.game.spaceship.y + collider.y;
-      if (obstacle.checkCollision(x, y, collider.w, collider.h) && !this.game.spaceship.crashed) {
+      if (
+        obstacle.checkCollision(x, y, collider.w, collider.h) &&
+        !this.game.spaceship.crashed
+      ) {
+        window.removeEventListener("keydown", this.shootEvent);
+
         collided = true;
         this.game.spaceship.crashed = true;
         this.state = "GAME_OVER";
@@ -145,7 +156,7 @@ class ScreenGame {
             window.removeEventListener("keydown", changeScreenEvent);
           }
         };
-  
+
         window.addEventListener("keydown", changeScreenEvent);
       }
     });
@@ -232,11 +243,14 @@ class ScreenGame {
   }
 
   #update() {
+    if (this.bulletReloadTime > 0) this.bulletReloadTime--;
+
     this.game.background.draw();
     this.game.spaceship.draw();
     if (
       (this.game.spaceship.crashed &&
-      this.game.spaceship.crashedFrame >= 216) || this.state === "LEAVING"
+        this.game.spaceship.crashedFrame >= 216) ||
+      this.state === "LEAVING"
     ) {
       this.#drawGameOver();
       this.#drawFinalScore();
@@ -318,7 +332,15 @@ class ScreenGame {
       }
     }
 
-    if (this.state === "PLAYING" || this.state === "GAME_OVER") {
+    if (
+      this.state === "PLAYING" ||
+      this.state === "NEW_LEVEL" ||
+      this.state === "GAME_OVER"
+    ) {
+      this.bullets = this.bullets.filter((bullet) => {
+        bullet.draw();
+        return true;
+      });
       this.obstacles = this.obstacles.filter((obstacle) => {
         obstacle.move();
 
@@ -334,11 +356,8 @@ class ScreenGame {
       });
     }
 
-
     if (this.state === "LEAVING") {
-      if (
-        this.animations.gameOverTextOpacity === 0
-      ) {
+      if (this.animations.gameOverTextOpacity === 0) {
         this.#changeScreen();
       }
     }
@@ -364,6 +383,23 @@ class ScreenGame {
         this.waitLevelText = 2 * 144; // This gives 2 seconds for the user to look at the new Level text
         this.nextLevelTimer = 5 * 144; // First level takes 5 seconds
         this.state = "NEW_LEVEL";
+
+        this.shootEvent = (event) => {
+          event.preventDefault();
+          if (event.key === " ") {
+            if (this.bulletReloadTime === 0) {
+              const bullet = new Bullet(
+                this.game,
+                this.game.spaceship.x + 24,
+                this.game.spaceship.y
+              );
+              this.bullets.push(bullet);
+              this.bulletReloadTime = 36; // 1 bullet per 0.25 second
+            }
+          }
+        };
+
+        window.addEventListener("keydown", this.shootEvent);
       },
       speed: [0.8, 0.8],
     });
@@ -377,6 +413,7 @@ class ScreenGame {
   #changeScreen() {
     clearInterval(this.interval);
     this.interval = null;
+    this.game.currentScreen = this.nextScreen;
     this.nextScreen.fastLoad();
   }
 }

@@ -227,6 +227,7 @@ class ScreenHome {
   #changeScreen() {
     clearInterval(this.interval);
     this.interval = null;
+    this.game.currentScreen = this.nextScreen;
     this.nextScreen.load();
   }
 }

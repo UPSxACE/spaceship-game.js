@@ -360,16 +360,17 @@ class Spaceship {
     this.game.context.drawImage(this.engineSprite, this.x, this.y + 3, 48, 48);
     this.game.context.drawImage(this.spaceshipSprite, this.x, this.y, 48, 48);
 
-    this.colliders.forEach((collider) => {
-      const x = this.x + collider.x;
-      const y = this.y + collider.y;
+    // Draw collision lines
+    // this.colliders.forEach((collider) => {
+    //   const x = this.x + collider.x;
+    //   const y = this.y + collider.y;
 
-      this.game.context.beginPath();
-      this.game.context.strokeStyle = "red";
-      this.game.context.lineWidth = 2;
-      this.game.context.strokeRect(x, y, collider.w, collider.h);
-      this.game.context.closePath();
-    });
+    //   this.game.context.beginPath();
+    //   this.game.context.strokeStyle = "red";
+    //   this.game.context.lineWidth = 2;
+    //   this.game.context.strokeRect(x, y, collider.w, collider.h);
+    //   this.game.context.closePath();
+    // });
 
     this.currentFrame = ((this.currentFrame + this.speedY * 5) % 250) + 1;
   }
@@ -514,16 +515,17 @@ class Screen {
       }
     });
 
-    this.game.context.beginPath();
-    this.game.context.strokeStyle = collided ? "red" : "green";
-    this.game.context.lineWidth = 2;
-    this.game.context.strokeRect(
-      obstacle.x + obstacle.collision.x,
-      obstacle.y + obstacle.collision.y,
-      48 + obstacle.collision.w,
-      48 + obstacle.collision.h
-    );
-    this.game.context.closePath();
+    // Draw collision lines
+    // this.game.context.beginPath();
+    // this.game.context.strokeStyle = collided ? "red" : "green";
+    // this.game.context.lineWidth = 2;
+    // this.game.context.strokeRect(
+    //   obstacle.x + obstacle.collision.x,
+    //   obstacle.y + obstacle.collision.y,
+    //   48 + obstacle.collision.w,
+    //   48 + obstacle.collision.h
+    // );
+    // this.game.context.closePath();
   }
 
   #clear() {
@@ -541,7 +543,7 @@ class Screen {
   load() {
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        const spriteIndex =  i * 4 + j
+        const spriteIndex = i * 4 + j;
 
         const spritesSelection = [4, 5, 7, 8, 10, 11, 14];
         if (!spritesSelection.includes(spriteIndex)) continue;

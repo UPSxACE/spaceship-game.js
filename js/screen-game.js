@@ -161,16 +161,17 @@ class ScreenGame {
       }
     });
 
-    this.game.context.beginPath();
-    this.game.context.strokeStyle = collided ? "red" : "green";
-    this.game.context.lineWidth = 2;
-    this.game.context.strokeRect(
-      obstacle.x + obstacle.collider.x,
-      obstacle.y + obstacle.collider.y,
-      48 + obstacle.collider.w,
-      48 + obstacle.collider.h
-    );
-    this.game.context.closePath();
+    // Draw collision lines
+    // this.game.context.beginPath();
+    // this.game.context.strokeStyle = collided ? "red" : "green";
+    // this.game.context.lineWidth = 2;
+    // this.game.context.strokeRect(
+    //   obstacle.x + obstacle.collider.x,
+    //   obstacle.y + obstacle.collider.y,
+    //   48 + obstacle.collider.w,
+    //   48 + obstacle.collider.h
+    // );
+    // this.game.context.closePath();
   }
 
   #drawGameOver() {

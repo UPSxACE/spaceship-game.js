@@ -274,16 +274,17 @@ class Spaceship {
       this.game.context.drawImage(this.spaceshipSprite, this.x, this.y, 48, 48);
     }
 
-    this.colliders.forEach((collider) => {
-      const x = this.x + collider.x;
-      const y = this.y + collider.y;
+    // Draw collision lines
+    // this.colliders.forEach((collider) => {
+    //   const x = this.x + collider.x;
+    //   const y = this.y + collider.y;
 
-      this.game.context.beginPath();
-      this.game.context.strokeStyle = "red";
-      this.game.context.lineWidth = 2;
-      this.game.context.strokeRect(x, y, collider.w, collider.h);
-      this.game.context.closePath();
-    });
+    //   this.game.context.beginPath();
+    //   this.game.context.strokeStyle = "red";
+    //   this.game.context.lineWidth = 2;
+    //   this.game.context.strokeRect(x, y, collider.w, collider.h);
+    //   this.game.context.closePath();
+    // });
 
     this.currentFrame = ((this.currentFrame + this.speedY * 5) % 250) + 1;
 

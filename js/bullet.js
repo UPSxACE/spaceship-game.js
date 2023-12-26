@@ -16,7 +16,6 @@ class Bullet {
     this.speedY = 1.5;
     this.width = 8;
     this.height = 24;
-    this.collided = false;
   }
 
   #drawImageRotated(image, x, y, rotation) {

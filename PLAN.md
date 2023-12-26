@@ -37,7 +37,6 @@ Screen are 400x600 (2:3)
 - [X] Engine animation on moving up
 - [X] Collision animation
 - [X] Ramping difficulty
-- Shooting asteroids on clicking/holding spacebar (2 per second)
-- Limited ammo or reload
+- [X] Shooting asteroids on clicking spacebar (4 per second)
 - Asteroid destruction effect
 

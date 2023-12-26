@@ -337,14 +337,26 @@ class ScreenGame {
       this.state === "NEW_LEVEL" ||
       this.state === "GAME_OVER"
     ) {
-      this.bullets = this.bullets.filter((bullet) => {
-        bullet.draw();
-        return true;
-      });
       this.obstacles = this.obstacles.filter((obstacle) => {
         obstacle.move();
 
         const inScreen = obstacle.checkInScreen();
+
+        for (let i = 0; i < this.bullets.length; i++) {
+          const bullet = this.bullets[i];
+          const bulletCollision = obstacle.checkCollision(
+            bullet.x - bullet.width / 2,
+            bullet.y - bullet.height,
+            bullet.width,
+            bullet.height
+          );
+
+          if (bulletCollision) {
+            this.bullets.splice(i, 1);
+            this.score += this.level;
+            return false;
+          }
+        }
 
         if (inScreen) {
           this.#drawObstacle(obstacle);
@@ -353,6 +365,11 @@ class ScreenGame {
 
         if (this.state === "PLAYING") this.score++;
         return false;
+      });
+
+      this.bullets = this.bullets.filter((bullet) => {
+        bullet.draw();
+        return true;
       });
     }
 

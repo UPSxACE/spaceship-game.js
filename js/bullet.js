@@ -18,6 +18,14 @@ class Bullet {
     this.height = 24;
   }
 
+  /**
+   * This private method draws the image on the canvas in the position specified,
+   * rotated by the given angle.
+   * @param {HTMLImageElement} image
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} rotation
+   */
   #drawImageRotated(image, x, y, rotation) {
     const scale = 1;
     this.context.setTransform(scale, 0, 0, scale, x, y); // sets scale and origin
@@ -39,8 +47,11 @@ class Bullet {
     const y = this.y;
     const angle = -((Math.PI * 90) / 180); // 90 degrees anti clock-wise
 
+    // The original sprite for the bullet is drawn horizontally,
+    // but in the game it must be rotated so it is drawn vertically
     this.#drawImageRotated(bulletSprite, x, y, angle);
 
+    // Move the bullet up
     this.y -= this.speedY;
   }
 }

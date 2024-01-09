@@ -1,5 +1,18 @@
+/**
+ * @typedef {x: number, y: number, w: number, h: number} AsteroidCollider
+ */
+
+/**
+ * This variable holds the loaded asteroid sprites. Asteroids can look different from each other,
+ * so there needs to be loaded multiple sprites.
+ * @type {[HTMLImageElement, AsteroidCollider][]}
+ */
 const asteroids = [];
-const asteroidCollisions = [
+/**
+ * This variable holds the coordinates, width and height of the asteroid's colliders.
+ * @type {AsteroidCollider[]}
+ */
+const asteroidColliders = [
   { x: 6, y: 9, w: -12, h: -13 },
   { x: 3, y: 9, w: -10, h: -13 },
   { x: 6, y: 7, w: -13, h: -10 },
@@ -17,28 +30,48 @@ const asteroidCollisions = [
   { x: 4, y: 0, w: -10, h: -10 },
   { x: 0, y: 0, w: -3, h: -10 },
 ];
+// Load asteroid sprites, and their colliders
 for (let i = 0; i < 16; i++) {
+  // There is a total of 15 asteroid sprites, but some of them would require more complex colliders.
+  // To make it easier for this small experimental project, I am filtering the sprites, and only
+  // taking the ones for which having only 1 collider is enough.
   const spritesSelection = [4, 5, 7, 8, 10, 11, 14];
   if (!spritesSelection.includes(i)) continue;
 
+  // Load
   const sprite = loadSprite(
     "img/asteroid/tile" + String(i).padStart(3, "0") + ".png"
   );
-  asteroids.push([sprite, asteroidCollisions[i]]);
+
+  // Push the selected and loaded sprite to the asteroids array.
+  asteroids.push([sprite, asteroidColliders[i]]);
 }
 
 class Obstacle {
   constructor(canvaWidth, canvaHeight, level) {
+    // Asteroids are generated in a random side of the screen (up, left or right).
+    // If generated on the left, they will spawn in a random point of the Y axis and travel
+    // to a random point in the right side of the screen.
+    // If generated on the right, its the exact opposite.
+    // If generated on top of the screen, it will travel to a random point of the X axis,
+    // on the bottom of the screen.
+    // On the first level they always spawn on the top part of the screen.
+    // in the second level they start appearing on the left, and in the third level they start
+    // appearing on the right.
     const spawnLocation = Math.min(this.#getRandomInt(1, 4), level);
     let initialX, initialY, fifthPart, destinyX, destinyY;
+    // Their speed is also slightly random and different from each other.
     const speed = this.#getRandomInt(0, level + 1) * 0.015 + 0.35;
     this.canvaWidth = canvaWidth;
     this.canvaHeight = canvaHeight;
 
+    // Pick random sprite-collider pair for the asteroid.
     const randomIndex = this.#getRandomInt(0, asteroids.length);
     this.sprite = asteroids[randomIndex][0];
     this.collider = asteroids[randomIndex][1];
 
+    // Note for the spawn location: they never spawn too close to the corners.
+    // That is what the variable "fifthPart" is used for(to help restrict that possibility).
     switch (spawnLocation) {
       // top
       case 1:
@@ -79,7 +112,12 @@ class Obstacle {
     }
   }
 
-  // The maximum is exclusive and the minimum is inclusive
+  /**
+   * Get random integer. The maximum is exclusive and the minimum is inclusive
+   * @param {number} min
+   * @param {number} max
+   * @returns
+   */
   #getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);

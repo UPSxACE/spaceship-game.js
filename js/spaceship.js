@@ -1,3 +1,6 @@
+/** This object will hold all the keys that are being pressed.
+ *  @type {Object<string,true>}
+ */
 const keys = {};
 
 window.addEventListener("keyup", (event) => {

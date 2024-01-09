@@ -19,11 +19,9 @@ class Game {
     this.background = new Background(this.context, "img/bg.png", 400, 400);
     this.currentScreen = new ScreenHome(this);
     this.spaceship = new Spaceship(this);
-    // this.spaceship
-    // this.bullets
-    // this.obstacles
   }
 
+  /** Load game, in the initial screen */
   init() {
     this.currentScreen.load();
   }

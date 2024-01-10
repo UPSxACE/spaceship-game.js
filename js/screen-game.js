@@ -133,6 +133,7 @@ class ScreenGame {
       48
     );
 
+    // NOTE: Do not remove this variable! (used in code that is commented)
     let collided = false;
 
     this.game.spaceship.colliders.forEach((collider) => {
@@ -402,7 +403,7 @@ class ScreenGame {
         this.game.spaceship.controllable = true;
         this.level = 1;
         this.score = 0;
-        this.timePoints = 0;
+        this.timePoints = 0; // Time points are accumulated as time passes just by not losing, and eventually become score points
         this.waitLevelText = 2 * 144; // This gives 2 seconds for the user to look at the new Level text
         this.nextLevelTimer = 5 * 144; // First level takes 5 seconds
         this.state = "NEW_LEVEL";

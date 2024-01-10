@@ -3,6 +3,7 @@
  */
 const keys = {};
 
+// events to listen to keys and register them
 window.addEventListener("keyup", (event) => {
   event.preventDefault();
   keys[event.key] = false;
@@ -13,12 +14,14 @@ window.addEventListener("keydown", (event) => {
 });
 
 class Spaceship {
+  // Sprites for the spaceship engine fire (off)
   fireOffSprites = [
     loadSprite("img/fire1/tile000.png"),
     loadSprite("img/fire1/tile001.png"),
     loadSprite("img/fire1/tile002.png"),
     loadSprite("img/fire1/tile003.png"),
   ];
+  // Sprites for the spaceship engine fire (on)
   fireOnSprites = [
     loadSprite("img/fire2/tile000.png"),
     loadSprite("img/fire2/tile001.png"),
@@ -27,8 +30,11 @@ class Spaceship {
     loadSprite("img/fire2/tile004.png"),
     loadSprite("img/fire2/tile005.png"),
   ];
+  // Sprite for the spaceship engine
   engineSprite = loadSprite("img/engine.png");
+  // Sprite for the spaceship
   spaceshipSprite = loadSprite("img/ship.png");
+  // Sprites for when the spaceship crashes
   explosionSprites = [
     loadSprite("img/explosion/tile000.png"),
     loadSprite("img/explosion/tile001.png"),
@@ -39,6 +45,7 @@ class Spaceship {
     loadSprite("img/explosion/tile006.png"),
     loadSprite("img/explosion/tile007.png"),
   ];
+  // The spaceship has 2 colliders. First is vertical, second is horizontal.
   colliders = [
     {
       x: 19,
@@ -60,19 +67,29 @@ class Spaceship {
   constructor(game) {
     this.currentFrame = 1; // from 1 to 150
     this.game = game;
-    this.controllable = false;
+    /** controllable by player */
+    this.controllable = false; 
     this.speedX = 1;
     this.speedY = 1;
     this.x = game.canva.width / 2 - 24;
     this.y = game.canva.height;
-    this.engineOn = false;
-    this.keepEngineOn = false;
-    this.keepEngineOnBoost = false;
-    this.keepEngineOff = false;
+    /** when engine is on it spits fire */
+    this.engineOn = false; 
+    /** force engine to stay on */
+    this.keepEngineOn = false; 
+    /** force engine to stay on at maximum fire power (only matters animation-wise) */
+    this.keepEngineOnBoost = false; 
+    /** force engine to stay chill (no spitting fire) */
+    this.keepEngineOff = false; 
+    /**
+     * autopilot can be configured so the spaceship drives itself to a position
+     * @type {{on: boolean, targetX: number, targetY: number, config: AutopilotConfig}}
+     */
     this.autopilot = {
       on: false,
       targetX: null,
       targetY: null,
+      /** @typedef {restoreSpeed: [number,number] | null, onArrival: {Function | null}} AutopilotConfig  */
       config: {
         restoreSpeed: null,
         onArrival: null,
@@ -216,7 +233,9 @@ class Spaceship {
   draw() {
     let movedUp = false;
 
+    // if crashed remove player control
     if (this.crashed) this.controllable = false;
+    // move the spaceship according to the keys pressed if it is controllable
     if (this.controllable) {
       if (keys["ArrowLeft"]) this.#moveLeft();
       if (keys["ArrowUp"]) {
@@ -227,6 +246,7 @@ class Spaceship {
       if (keys["ArrowDown"]) this.#moveDown();
     }
 
+    // if autopilot on, move in direction to the targeted place
     if (this.autopilot.on) {
       if (this.speedX > Math.abs(this.x - this.autopilot.targetX))
         this.x = this.autopilot.targetX;
@@ -239,6 +259,7 @@ class Spaceship {
         movedUp = true;
         this.#moveUp();
       }
+      // if already in the targeted coordinates, stop/finish autopilot
       if (
         this.x === this.autopilot.targetX &&
         this.y === this.autopilot.targetY
@@ -246,15 +267,14 @@ class Spaceship {
         this.#autopilotOff();
     }
 
+    // sprite logic
     this.engineOn = (movedUp || this.keepEngineOn) && !this.keepEngineOff;
     if (!this.engineOn) this.currentFrame = 150;
 
-    // let currentFrame = Math.floor(this.currentFrame / 25);
     let currentFrame = Math.floor(this.currentFrame / 50);
 
     let firesprite;
     if (this.engineOn) {
-      // firesprite = this.fireOnSprites[currentFrame % this.fireOnSprites.length];
       firesprite = this.fireOnSprites[Math.min(currentFrame, 5)];
       if (this.game.background.speedY > 2.5 || this.keepEngineOnBoost) {
         firesprite = this.fireOnSprites[5];
@@ -265,6 +285,8 @@ class Spaceship {
         this.fireOffSprites[currentFrame % this.fireOffSprites.length];
     }
 
+    // if the spaceship didn't crash, or it crashed but the explosion is not done yet, draw the spaceship,
+    // engine, and fire.
     if (this.crashedFrame < 81) {
       this.game.context.drawImage(firesprite, this.x, this.y + 3, 48, 48);
       this.game.context.drawImage(
@@ -289,6 +311,7 @@ class Spaceship {
     //   this.game.context.closePath();
     // });
 
+    // set next frame
     this.currentFrame = ((this.currentFrame + this.speedY * 5) % 250) + 1;
 
     if (this.crashed) this.#drawExplosion();

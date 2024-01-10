@@ -4,6 +4,7 @@ class ScreenHome {
    */
   constructor(game) {
     this.game = game;
+    /** @type {string | null} */
     this.state = null;
     this.animations = {
       titleOpacity: 0,
@@ -185,6 +186,10 @@ class ScreenHome {
     }
   }
 
+  /**
+   * This screen should only be loaded with this function the first time the game is ran.
+   * After it, use fastLoad() instead.
+   */
   load() {
     this.loadHighscore();
     this.game.spaceship.resetState();
@@ -240,6 +245,9 @@ class ScreenHome {
     }, 1000 / 144); // 144 frames per second
   }
 
+  /**
+   * This is almost identical to the normal load(), but unlike load() it skips the useless animations
+   */
   fastLoad() {
     this.loadHighscore();
     const onArrival = () => {

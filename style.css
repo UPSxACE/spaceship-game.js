@@ -25,3 +25,23 @@ main {
   /* border: 1px solid black; */
   flex-grow: 0;
 }
+
+#launch {
+  all: unset;
+  position: absolute;
+  color: white;
+  border: 3px solid white;
+  padding: 12px;
+  opacity: 100;
+}
+
+#launch:hover {
+  color:yellow;
+  border-color: yellow;
+  cursor: pointer;
+}
+
+#launch.hide {
+  opacity: 0;
+  transition: 1s;
+}

@@ -1,3 +1,5 @@
+const pressedStartSound = new Audio("audio/start-pressed.wav");
+
 class ScreenHome {
   /**
    * @param {Game} game
@@ -231,6 +233,9 @@ class ScreenHome {
         event.preventDefault();
         if (event.key === "Enter") {
           this.state = "LEAVING";
+          pressedStartSound.currentTime = 0;
+          pressedStartSound.volume = 0.5;
+          pressedStartSound.play();
           this.nextScreen = new ScreenGame(this.game);
           window.removeEventListener("keydown", changeScreenEvent);
         }
@@ -257,6 +262,9 @@ class ScreenHome {
         event.preventDefault();
         if (event.key === "Enter") {
           this.state = "LEAVING";
+          pressedStartSound.currentTime = 0;
+          pressedStartSound.volume = 0.5;
+          pressedStartSound.play();
           this.nextScreen = new ScreenGame(this.game);
           window.removeEventListener("keydown", changeScreenEvent);
         }

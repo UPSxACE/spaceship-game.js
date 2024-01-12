@@ -1,3 +1,5 @@
+const soundtrack = new Audio("audio/soundtrack.mp3");
+
 const loadSprite = (url) => {
   const img = new Image(48, 48);
   img.src = url;
@@ -24,5 +26,9 @@ class Game {
   /** Load game, in the initial screen */
   init() {
     this.currentScreen.load();
+    soundtrack.currentTime = 0;
+    soundtrack.volume = 0.25;
+    soundtrack.loop = true;
+    soundtrack.play();
   }
 }

@@ -1,3 +1,8 @@
+const shotSound = new Audio("audio/shot.wav");
+const spaceshipExplosionAudio = new Audio("audio/spaceship-explosion.wav");
+const asteroidExplosionAudio = new Audio("audio/asteroid-explosion.wav");
+const pressedMenuSound = new Audio("audio/start-pressed.wav");
+
 class ScreenGame {
   /**
    * @param {Game} game
@@ -143,6 +148,9 @@ class ScreenGame {
         obstacle.checkCollision(x, y, collider.w, collider.h) &&
         !this.game.spaceship.crashed
       ) {
+        spaceshipExplosionAudio.currentTime = 0;
+        spaceshipExplosionAudio.volume = 0.75;
+        spaceshipExplosionAudio.play();
         window.removeEventListener("keydown", this.shootEvent);
 
         collided = true;
@@ -158,6 +166,9 @@ class ScreenGame {
           event.preventDefault();
           if (event.key === "Enter") {
             this.state = "LEAVING";
+            pressedMenuSound.currentTime = 0;
+            pressedMenuSound.volume = 0.5;
+            pressedMenuSound.play();
             this.nextScreen = new ScreenHome(this.game);
             window.removeEventListener("keydown", changeScreenEvent);
           }
@@ -359,6 +370,9 @@ class ScreenGame {
           );
 
           if (bulletCollision) {
+            asteroidExplosionAudio.currentTime = 0;
+            asteroidExplosionAudio.volume = 0.5;
+            asteroidExplosionAudio.play();
             this.bullets.splice(i, 1);
             this.score += this.level;
             return false;
@@ -412,6 +426,9 @@ class ScreenGame {
           event.preventDefault();
           if (event.key === " ") {
             if (this.bulletReloadTime === 0) {
+              shotSound.volume = 0.5;
+              shotSound.currentTime = 0;
+              shotSound.play();
               const bullet = new Bullet(
                 this.game,
                 this.game.spaceship.x + 24,
